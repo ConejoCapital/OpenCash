@@ -1,0 +1,36 @@
+# OpenCash — Config Template
+# Copy this file and fill in your operator details and API keys.
+# Environment variables are interpolated: ${ENV_VAR}
+
+operator:
+  name: "my-operator"
+  chain: solana
+  network: mainnet-beta
+  payment_address: "${PAYMENT_RECIPIENT_ADDRESS}"
+
+tokens:
+  - symbol: USDC
+    mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+    decimals: 6
+    program: spl-token
+  - symbol: PYUSD
+    mint: "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo"
+    decimals: 6
+    program: token-2022
+
+services:
+  # Add your services below. Each becomes POST /v1/proxy/{name} with x402 paywall.
+  # Example:
+  # - name: openai-chat
+  #   description: "OpenAI GPT-4o chat completions"
+  #   upstream: https://api.openai.com/v1/chat/completions
+  #   method: POST
+  #   auth:
+  #     header: Authorization
+  #     value: "Bearer ${OPENAI_API_KEY}"
+  #   price: "0.005"
+  - name: echo
+    description: "Echo test service (replace with real APIs)"
+    upstream: https://httpbin.org/post
+    method: POST
+    price: "0.001"

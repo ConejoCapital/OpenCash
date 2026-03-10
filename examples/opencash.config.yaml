@@ -1,0 +1,82 @@
+# OpenCash — Full Example Config
+# Shows how to gate multiple upstream APIs behind x402 micropayments.
+
+operator:
+  name: "acme-ai-proxy"
+  chain: solana
+  network: mainnet-beta
+  payment_address: "${PAYMENT_RECIPIENT_ADDRESS}"
+
+tokens:
+  - symbol: USDC
+    mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+    decimals: 6
+    program: spl-token
+  - symbol: PYUSD
+    mint: "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo"
+    decimals: 6
+    program: token-2022
+
+services:
+  # ── AI Models ──
+
+  - name: openai-chat
+    description: "OpenAI GPT-4o chat completions"
+    upstream: https://api.openai.com/v1/chat/completions
+    method: POST
+    auth:
+      header: Authorization
+      value: "Bearer ${OPENAI_API_KEY}"
+    price: "0.005"
+
+  - name: openai-embeddings
+    description: "OpenAI text-embedding-3-small"
+    upstream: https://api.openai.com/v1/embeddings
+    method: POST
+    auth:
+      header: Authorization
+      value: "Bearer ${OPENAI_API_KEY}"
+    price: "0.001"
+
+  - name: anthropic-chat
+    description: "Anthropic Claude Sonnet chat"
+    upstream: https://api.anthropic.com/v1/messages
+    method: POST
+    auth:
+      header: x-api-key
+      value: "${ANTHROPIC_API_KEY}"
+    headers:
+      anthropic-version: "2023-06-01"
+    price: "0.005"
+
+  - name: gemini-flash
+    description: "Google Gemini 2.5 Flash"
+    upstream: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}"
+    method: POST
+    price: "0.001"
+
+  - name: gemini-pro
+    description: "Google Gemini 2.5 Pro"
+    upstream: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}"
+    method: POST
+    price: "0.010"
+
+  # ── Search & Data ──
+
+  - name: serper-search
+    description: "Serper Google Search API"
+    upstream: https://google.serper.dev/search
+    method: POST
+    auth:
+      header: X-API-KEY
+      value: "${SERPER_API_KEY}"
+    price: "0.002"
+
+  - name: serper-news
+    description: "Serper Google News API"
+    upstream: https://google.serper.dev/news
+    method: POST
+    auth:
+      header: X-API-KEY
+      value: "${SERPER_API_KEY}"
+    price: "0.002"

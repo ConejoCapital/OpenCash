@@ -1,0 +1,11 @@
+services:
+  opencash:
+    build: .
+    ports:
+      - "4020:4020"
+      - "4021:4021"
+    env_file:
+      - .env
+    volumes:
+      - ./opencash.config.yaml:/app/opencash.config.yaml:ro
+    restart: unless-stopped
