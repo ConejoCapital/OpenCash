@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { interpolateEnv, validateConfig } from "../config.js";
+import { interpolateEnv, validateConfig, getNetworkCaip2 } from "../config.js";
 import type { OpenCashConfig } from "../types.js";
 
 describe("interpolateEnv", () => {
@@ -105,5 +105,35 @@ describe("validateConfig", () => {
       services: [{ ...validConfig.services[0], price: "0" }],
     };
     expect(() => validateConfig(bad)).toThrow("invalid price");
+  });
+});
+
+describe("getNetworkCaip2", () => {
+  const makeConfig = (chain: string, network: string): OpenCashConfig => ({
+    operator: { name: "t", chain, network, payment_address: "x" },
+    tokens: [{ symbol: "USDC", mint: "m", decimals: 6, program: "spl-token" }],
+    services: [{ name: "s", description: "d", upstream: "https://x.com", method: "POST", price: "1" }],
+  });
+
+  it("maps mainnet-beta to genesis hash", () => {
+    expect(getNetworkCaip2(makeConfig("solana", "mainnet-beta"))).toBe(
+      "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+    );
+  });
+
+  it("maps devnet to genesis hash", () => {
+    expect(getNetworkCaip2(makeConfig("solana", "devnet"))).toBe(
+      "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+    );
+  });
+
+  it("passes through already-correct genesis hash", () => {
+    expect(getNetworkCaip2(makeConfig("solana", "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"))).toBe(
+      "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+    );
+  });
+
+  it("passes through non-solana chains unchanged", () => {
+    expect(getNetworkCaip2(makeConfig("eip155", "8453"))).toBe("eip155:8453");
   });
 });

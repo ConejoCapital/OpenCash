@@ -108,8 +108,22 @@ export function loadConfig(configPath?: string): OpenCashConfig {
 }
 
 /**
+ * Solana cluster name → CAIP-2 genesis hash mapping.
+ * @faremeter requires the genesis hash format, not human-readable names.
+ */
+const SOLANA_NETWORK_MAP: Record<string, string> = {
+  "mainnet-beta": "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+  "devnet": "EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+  "testnet": "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z",
+};
+
+/**
  * Build CAIP-2 network identifier from config.
+ * Maps human-readable Solana cluster names to genesis hash format.
  */
 export function getNetworkCaip2(config: OpenCashConfig): Network {
-  return `${config.operator.chain}:${config.operator.network}` as Network;
+  const network = config.operator.chain === "solana"
+    ? SOLANA_NETWORK_MAP[config.operator.network] || config.operator.network
+    : config.operator.network;
+  return `${config.operator.chain}:${network}` as Network;
 }
